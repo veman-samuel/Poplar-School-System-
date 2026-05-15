@@ -1,0 +1,8 @@
+{
+  "name": "Poplar Connect",
+  "description": "Premium school management mobile portal for Poplar School's Nursery, Primary, and Secondary sections. Includes interactive tools for administrators, section managers, teachers, and learners with visual progress tracking and AI-powered personalized learning paths.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
