@@ -1,0 +1,203 @@
+<!-- Visitor Admission Portal -->
+<div id="portal-visitor-root" class="space-y-6">
+    <!-- Hero Banner -->
+    <div class="relative bg-gradient-to-br from-red-950/80 via-[#2D0A0A] to-stone-900 border border-[#FFD700]/15 rounded-3xl p-6 lg:p-8 overflow-hidden shadow-xl">
+        <div class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none">
+            <i data-lucide="sparkles" class="w-72 h-72 text-poplar-gold"></i>
+        </div>
+        <div class="max-w-2xl space-y-3">
+            <span class="text-[10px] uppercase font-mono tracking-widest bg-amber-500/10 text-poplar-gold px-3 py-1 rounded-full border border-amber-500/15 font-bold">
+                External Admissions Gateway
+            </span>
+            <h2 class="text-3xl lg:text-4xl font-serif italic text-white font-bold leading-tight">
+                Empowering the future of East African Scholars.
+            </h2>
+            <p class="text-xs lg:text-sm text-slate-300 leading-relaxed font-light">
+                Welcome to Poplar Co-operative Academy and Nursery. We combine classical, high-rigor core subjects with modern technology, personalized AI study designs, and on-campus NFC smart badge systems. 
+            </p>
+            <div class="flex gap-4 pt-2">
+                <div class="text-left">
+                    <span class="text-xs text-poplar-gold font-mono block">3 Division Tracks</span>
+                    <span class="text-[10px] text-slate-400">Nursery to Secondary</span>
+                </div>
+                <div class="w-px bg-white/10 self-stretch"></div>
+                <div class="text-left">
+                    <span class="text-xs text-emerald-400 font-mono block">99.2% Score Rates</span>
+                    <span class="text-[10px] text-slate-400">Uganda national outcomes</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Curriculum Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Nursery division -->
+        <div class="bg-poplar-card p-5 rounded-2xl border border-pink-500/10 space-y-3 flex flex-col justify-between">
+            <div>
+                <span class="text-[9px] font-mono font-bold text-pink-400 bg-pink-500/5 border border-pink-500/20 px-2 py-0.5 rounded uppercase">
+                    Early Learning
+                </span>
+                <h3 class="font-serif italic font-bold text-base text-white pt-2">Nursery &amp; Kindergarten</h3>
+                <p class="text-xs text-slate-400 leading-relaxed font-light pt-15">
+                    Focus on foundational literacy, phonetic games, early numeracy, and safe physical development in collaborative play spaces.
+                </p>
+            </div>
+            <div class="pt-3 border-t border-white/5 flex justify-between items-center text-[10px] font-mono">
+                <span class="text-slate-500">Base Tuition</span>
+                <span class="text-pink-300 font-bold">UGX 650,000 / term</span>
+            </div>
+        </div>
+
+        <!-- Primary division -->
+        <div class="bg-poplar-card p-5 rounded-2xl border border-poplar-primaryBlue/15 space-y-3 flex flex-col justify-between">
+            <div>
+                <span class="text-[9px] font-mono font-bold text-poplar-primaryBlue bg-poplar-primaryBlue/5 border border-poplar-primaryBlue/20 px-2 py-0.5 rounded uppercase">
+                    Ages 6 to 12
+                </span>
+                <h3 class="font-serif italic font-bold text-base text-white pt-2">Primary School Section</h3>
+                <p class="text-xs text-slate-400 leading-relaxed font-light pt-1.5">
+                    Rigorous education in Algebra, English Grammar, Social Studies, Integrated Sciences, and early coding basics.
+                </p>
+            </div>
+            <div class="pt-3 border-t border-white/5 flex justify-between items-center text-[10px] font-mono">
+                <span class="text-slate-500">Base Tuition</span>
+                <span class="text-poplar-primaryBlue font-bold">UGX 850,000 / term</span>
+            </div>
+        </div>
+
+        <!-- Secondary division -->
+        <div class="bg-poplar-card p-5 rounded-2xl border border-poplar-gold/15 space-y-3 flex flex-col justify-between">
+            <div>
+                <span class="text-[9px] font-mono font-bold text-poplar-gold bg-poplar-gold/5 border border-poplar-gold/25 px-2 py-0.5 rounded uppercase">
+                    Ages 13 to 18
+                </span>
+                <h3 class="font-serif italic font-bold text-base text-white pt-2">Secondary Level Section</h3>
+                <p class="text-xs text-slate-400 leading-relaxed font-light pt-1.5">
+                    Advanced calculus, Chemistry, English literature, physics labs, geography, and enterprise business simulations.
+                </p>
+            </div>
+            <div class="pt-3 border-t border-white/5 flex justify-between items-center text-[10px] font-mono">
+                <span class="text-slate-500">Base Tuition</span>
+                <span class="text-poplar-gold font-bold">UGX 1,200,000 / term</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Admission Portal Form -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="bg-poplar-card p-5 lg:p-6 rounded-3xl border border-white/5 lg:col-span-8 space-y-4">
+            <div>
+                <h3 class="font-serif italic text-lg text-white font-bold flex items-center gap-2">
+                    <i data-lucide="book-open" class="w-5 h-5 text-poplar-gold"></i>
+                    Academic Admission Form
+                </h3>
+                <p class="text-xs text-slate-400 font-mono pt-1">Submit dynamic admissions details directly into the Poplar student registry.</p>
+            </div>
+
+            <!-- Admission Enrollment Form -->
+            <form method="post" action="{% url 'submit_admission' %}" class="space-y-4 text-xs font-mono">
+                {% csrf_token %}
+                <input type="hidden" name="next_role" value="Visitor">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-slate-400 block font-bold uppercase text-[10px]">Scholar Name:</label>
+                        <input type="text" name="name" required placeholder="e.g. Clara Ssemwogerere"
+                               class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 placeholder-slate-600 focus:outline-none focus:border-poplar-gold/40">
+                    </div>
+                    
+                    <div class="space-y-1.5">
+                        <label class="text-slate-400 block font-bold uppercase text-[10px]">Academic Division Track:</label>
+                        <select name="section" required class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 focus:outline-none focus:border-poplar-gold/40">
+                            <option value="Nursery">Nursery School (UGX 650,000)</option>
+                            <option value="Primary">Primary School (UGX 850,000)</option>
+                            <option value="Secondary">Secondary School (UGX 1,200,000)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-slate-400 block font-bold uppercase text-[10px]">Parent/Guardian Name:</label>
+                        <input type="text" name="parent_name" required placeholder="e.g. Marcus Ssemwogerere"
+                               class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 placeholder-slate-600 focus:outline-none focus:border-poplar-gold/40">
+                    </div>
+                    
+                    <div class="space-y-1.5">
+                        <label class="text-slate-400 block font-bold uppercase text-[10px]">Guardian Notification Email:</label>
+                        <input type="email" name="parent_email" required placeholder="e.g. marcus@telco.co.ug"
+                               class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 placeholder-slate-600 focus:outline-none focus:border-poplar-gold/40">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-slate-400 block font-bold uppercase text-[10px]">Primary Class Level requested:</label>
+                    <select name="class_group_id" required class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 focus:outline-none focus:border-poplar-gold/40">
+                        {% for class in classes %}
+                        <option value="{{ class.id }}">{{ class.title }} (Section: {{ class.section }})</option>
+                        {% empty %}
+                        <option value="">No Active Class Groups Registered - Trigger "Sync Seed DB" first</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Custom instructions banner -->
+                <div class="p-3 bg-white/[0.02] rounded-xl border border-white/5 text-[11px] text-slate-400 flex gap-2">
+                    <i data-lucide="info" class="w-4 h-4 text-poplar-gold shrink-0 mt-0.5 animate-pulse"></i>
+                    <p>On submission, student status is logged as <strong class="text-white">Pending Approval</strong>. The selected physical Section Coordinator must review and approve credentials prior to any formal classroom attendance or smart card provisioning.</p>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-gradient-to-r from-amber-600 to-[#FFD700] text-black font-semibold text-xs uppercase tracking-wider rounded-xl hover:brightness-110 cursor-pointer shadow-lg transition-all">
+                    Register Scholar Admission
+                </button>
+            </form>
+        </div>
+
+        <!-- Poplar Admissions Guidelines column -->
+        <div class="bg-poplar-card p-5 rounded-3xl border border-white/5 lg:col-span-4 flex flex-col justify-between">
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 pb-2 border-b border-white/5">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-poplar-gold"></i>
+                    <h3 class="font-serif italic text-base text-white font-bold">Admissions Checklist</h3>
+                </div>
+
+                <ul class="space-y-3 font-mono text-[11px] leading-relaxed text-slate-300">
+                    <li class="flex gap-2">
+                        <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5"></i>
+                        <span>Register the scholar using the adjacent form under accurate age targets.</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5"></i>
+                        <span>Check email inbox for custom enrollment verification keys.</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5"></i>
+                        <span>Pay Term-1 tuition clearance deposits using MTN/Airtel/M-Pesa.</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5"></i>
+                        <span>Report on-campus on Day-1 for biometric badge printing operations.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Virtual SmartCard illustration -->
+            <div class="pt-6 border-t border-white/5 mt-6 space-y-2">
+                <span class="text-[9px] uppercase font-mono tracking-wider text-slate-400 block font-bold">Chip Integrated Badge</span>
+                <div class="bg-[#3D0F0F] rounded-2xl p-4 border border-[#FFD700]/15 relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.2 rounded font-bold font-mono">ACTIVE ID</span>
+                            <div class="text-xs font-serif italic text-white pt-1">Poplar Smart Shield</div>
+                        </div>
+                        <i data-lucide="credit-card" class="w-4 h-4 text-poplar-gold"></i>
+                    </div>
+                    <div class="pt-6 font-mono text-[9px] text-slate-400 uppercase tracking-widest flex justify-between">
+                        <span>Ref: PO-2026-CHIP</span>
+                        <span>NFC SECURE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,191 @@
+<!-- Section Coordinator Workspace -->
+<div id="portal-section-manager-root" class="space-y-6" x-data="{ currentSection: 'Primary' }">
+
+    <!-- Header Block -->
+    <div class="border-b border-white/5 pb-5">
+        <div class="flex items-center gap-2">
+            <span class="text-[10px] uppercase font-mono tracking-widest bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/15 font-bold">
+                Coordinator Desktop
+            </span>
+            <span class="text-xs text-slate-500 font-mono">Assigned Level: Academic Dean</span>
+        </div>
+        <h2 class="text-2xl lg:text-3xl font-serif italic text-white font-bold pt-1.5 flex items-center gap-2">
+            Division Coordinator Hub
+        </h2>
+        <p class="text-xs text-slate-400 font-mono mt-1">
+            Section Managers monitor and authorize registrations, configure class teachers, and verify local attendance schedules.
+        </p>
+    </div>
+
+    <!-- Live Section Switcher Bar -->
+    <div class="bg-poplar-card p-2 rounded-2xl border border-white/5 flex flex-wrap gap-2 text-xs font-mono font-bold">
+        <button @click="currentSection = 'Nursery'"
+                :class="currentSection === 'Nursery' ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' : 'text-slate-400 border-transparent hover:text-slate-200'"
+                class="px-4 py-2 rounded-lg border flex items-center gap-1.5 cursor-pointer transition-all">
+            <span class="w-2 h-2 rounded-full bg-pink-500"></span> Nursery School Division
+        </button>
+        <button @click="currentSection = 'Primary'"
+                :class="currentSection === 'Primary' ? 'bg-poplar-primaryBlue/10 text-blue-400 border-poplar-primaryBlue/15' : 'text-slate-400 border-transparent hover:text-slate-200'"
+                class="px-4 py-2 rounded-lg border flex items-center gap-1.5 cursor-pointer transition-all">
+            <span class="w-2 h-2 rounded-full bg-poplar-primaryBlue"></span> Primary School Division
+        </button>
+        <button @click="currentSection = 'Secondary'"
+                :class="currentSection === 'Secondary' ? 'bg-poplar-gold/10 text-poplar-gold border-poplar-gold/25' : 'text-slate-400 border-transparent hover:text-slate-200'"
+                class="px-4 py-2 rounded-lg border flex items-center gap-1.5 cursor-pointer transition-all">
+            <span class="w-2 h-2 rounded-full bg-poplar-gold"></span> Secondary School Division
+        </button>
+    </div>
+
+    <!-- Local Section Analytics & Operational Tables -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Division Summary Desk -->
+        <div class="bg-poplar-card p-5 rounded-2xl border border-white/5 space-y-4 lg:col-span-1">
+            <h3 class="font-serif italic font-bold text-base text-white border-b border-white/5 pb-2">Division Snapshot</h3>
+            
+            <div class="space-y-4 font-mono text-xs">
+                <!-- Nursery Snapshot stats -->
+                <div x-show="currentSection === 'Nursery'" class="space-y-3">
+                    <div class="p-3 bg-black/30 rounded-xl space-y-1">
+                        <span class="text-slate-500 text-[10px]">Division Students</span>
+                        <p class="text-xl font-bold text-white">{{ nursery_students.count }} Scholars</p>
+                    </div>
+                    <div class="p-3 bg-black/30 rounded-xl space-y-1">
+                        <span class="text-slate-500 text-[10px]">Division Classes</span>
+                        <p class="text-xl font-bold text-white">{{ nursery_classes.count }} ClassGroups</p>
+                    </div>
+                    <div class="p-3 bg-black/30 rounded-xl space-y-1">
+                        <span class="text-slate-500 text-[10px]">Admissions Buffer</span>
+                        <p class="text-xl font-bold text-pink-400">{{ nursery_pending.count }} Pending Approval</p>
+                    </div>
+                </div>
+
+                <!-- Primary Snapshot stats -->
+                <div x-show="currentSection === 'Primary'" class="space-y-3">
+                    <div class="p-3 bg-black/30 rounded-xl space-y-1">
+                        <span class="text-slate-500 text-[10px]">Division Students</span>
+                        <p class="text-xl font-bold text-white">{{ primary_students.count }} Scholars</p>
+                    </div>
+                    <div class="p-3 bg-black/30 rounded-xl space-y-1">
+                        <span class="text-slate-500 text-[10px]">Division Classes</span>
+                        <p class="text-xl font-bold text-white">{{ primary_classes.count }} ClassGroups</p>
+                    </div>
+                    <div class="p-3 bg-black/30 rounded-xl space-y-1">
+                        <span class="text-slate-500 text-[10px]">Admissions Buffer</span>
+                        <p class="text-xl font-bold text-blue-400">{{ primary_pending.count }} Pending Approval</p>
+                    </div>
+                </div>
+
+                <!-- Secondary Snapshot stats -->
+                <div x-show="currentSection === 'Secondary'" class="space-y-3">
+                    <div class="p-3 bg-black/30 rounded-xl space-y-1">
+                        <span class="text-slate-500 text-[10px]">Division Students</span>
+                        <p class="text-xl font-bold text-white">{{ secondary_students.count }} Scholars</p>
+                    </div>
+                    <div class="p-3 bg-black/30 rounded-xl space-y-1">
+                        <span class="text-slate-500 text-[10px]">Division Classes</span>
+                        <p class="text-xl font-bold text-white">{{ secondary_classes.count }} ClassGroups</p>
+                    </div>
+                    <div class="p-3 bg-black/30 rounded-xl space-y-1">
+                        <span class="text-slate-500 text-[10px]">Admissions Buffer</span>
+                        <p class="text-xl font-bold text-poplar-gold">{{ secondary_pending.count }} Pending Approval</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Enrollments list -->
+        <div class="bg-poplar-card p-5 rounded-2xl border border-white/5 lg:col-span-2 space-y-4">
+            <h3 class="font-serif italic font-bold text-base text-white border-b border-white/5 pb-2">Active Students &amp; Admission State</h3>
+            
+            <!-- NURSERY STUDENTS GRID -->
+            <div x-show="currentSection === 'Nursery'" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 text-xs font-mono">
+                {% for scholar in nursery_students %}
+                <div class="p-3.5 bg-poplar-cardLight/50 rounded-xl border border-white/5 flex justify-between items-center">
+                    <div class="flex items-center gap-2.5">
+                        <img src="{{ scholar.photo }}" class="w-7 h-7 rounded-full border border-pink-500/25">
+                        <div>
+                            <p class="font-bold text-slate-100">{{ scholar.name }}</p>
+                            <span class="text-[9px] text-slate-500">Class: {{ scholar.class_group.title }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        {% if scholar.enrollment_status == 'Approved' %}
+                        <span class="text-[9px] font-bold text-emerald-400 border border-emerald-400/25 bg-emerald-500/5 px-2 py-0.5 rounded tracking-wide uppercase">Enrolled</span>
+                        {% else %}
+                        <form method="post" action="{% url 'approve_student' scholar.id %}" class="inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="role_referrer" value="SectionManager">
+                            <button type="submit" class="px-2 py-1 bg-pink-700 hover:bg-pink-600 text-white font-bold text-[9px] uppercase rounded border-none cursor-pointer">
+                                Authorize Admission
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-xs text-slate-500 italic font-mono p-4">No nursery students enrolled. Onboard via the Admission Forms.</p>
+                {% endfor %}
+            </div>
+
+            <!-- PRIMARY STUDENTS GRID -->
+            <div x-show="currentSection === 'Primary'" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 text-xs font-mono">
+                {% for scholar in primary_students %}
+                <div class="p-3.5 bg-poplar-cardLight/50 rounded-xl border border-white/5 flex justify-between items-center">
+                    <div class="flex items-center gap-2.5">
+                        <img src="{{ scholar.photo }}" class="w-7 h-7 rounded-full border border-blue-500/25">
+                        <div>
+                            <p class="font-bold text-slate-100">{{ scholar.name }}</p>
+                            <span class="text-[9px] text-slate-500">Class: {{ scholar.class_group.title }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        {% if scholar.enrollment_status == 'Approved' %}
+                        <span class="text-[9px] font-bold text-emerald-400 border border-emerald-400/25 bg-emerald-500/5 px-2 py-0.5 rounded tracking-wide uppercase">Enrolled</span>
+                        {% else %}
+                        <form method="post" action="{% url 'approve_student' scholar.id %}" class="inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="role_referrer" value="SectionManager">
+                            <button type="submit" class="px-2 py-1 bg-blue-700 hover:bg-blue-600 text-white font-bold text-[9px] uppercase rounded border-none cursor-pointer">
+                                Authorize Admission
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-xs text-slate-500 italic font-mono p-4">No primary students enrolled. Onboard via the Admission Forms.</p>
+                {% endfor %}
+            </div>
+
+            <!-- SECONDARY STUDENTS GRID -->
+            <div x-show="currentSection === 'Secondary'" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 text-xs font-mono">
+                {% for scholar in secondary_students %}
+                <div class="p-3.5 bg-poplar-cardLight/50 rounded-xl border border-white/5 flex justify-between items-center">
+                    <div class="flex items-center gap-2.5">
+                        <img src="{{ scholar.photo }}" class="w-7 h-7 rounded-full border border-[#FFD700]/25">
+                        <div>
+                            <p class="font-bold text-slate-100">{{ scholar.name }}</p>
+                            <span class="text-[9px] text-slate-500">Class: {{ scholar.class_group.title }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        {% if scholar.enrollment_status == 'Approved' %}
+                        <span class="text-[9px] font-bold text-emerald-400 border border-emerald-400/25 bg-emerald-500/5 px-2 py-0.5 rounded tracking-wide uppercase">Enrolled</span>
+                        {% else %}
+                        <form method="post" action="{% url 'approve_student' scholar.id %}" class="inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="role_referrer" value="SectionManager">
+                            <button type="submit" class="px-2 py-1 bg-[#FFD700] hover:bg-[#FFD700]/80 text-black font-bold text-[9px] uppercase rounded border-none cursor-pointer">
+                                Authorize Admission
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-xs text-slate-500 italic font-mono p-4">No secondary students enrolled. Onboard via the Admission Forms.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

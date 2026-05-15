@@ -1,4 +1,4 @@
-export type UserRole = "Visitor" | "SectionManager" | "Teacher" | "Learner" | "Admin";
+export type UserRole = "Visitor" | "SectionManager" | "Teacher" | "Learner" | "Admin" | "Parent" | "Accountant";
 
 export interface Student {
   id: string;

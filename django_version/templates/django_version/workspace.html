@@ -1,0 +1,32 @@
+{% extends 'django_version/base.html' %}
+
+{% block title %}Poplar Academy Workspace Hub ({{ current_role }}){% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Active Portal Body Panel -->
+    <div class="transition-all duration-300">
+        {% if current_role == 'Admin' %}
+            {% include 'django_version/portals/admin.html' %}
+        {% elif current_role == 'SectionManager' %}
+            {% include 'django_version/portals/section_manager.html' %}
+        {% elif current_role == 'Teacher' %}
+            {% include 'django_version/portals/teacher.html' %}
+        {% elif current_role == 'Learner' %}
+            {% include 'django_version/portals/learner.html' %}
+        {% elif current_role == 'Parent' %}
+            {% include 'django_version/portals/parent.html' %}
+        {% elif current_role == 'Accountant' %}
+            {% include 'django_version/portals/accountant.html' %}
+        {% else %}
+            {% include 'django_version/portals/visitor.html' %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    console.log("Poplar Portal Activated: {{ current_role|default:'Visitor' }}");
+</script>
+{% endblock %}

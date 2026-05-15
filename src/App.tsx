@@ -15,6 +15,8 @@ import AdminPortal from "./components/AdminPortal";
 import SectionManagerPortal from "./components/SectionManagerPortal";
 import TeacherPortal from "./components/TeacherPortal";
 import LearnerPortal from "./components/LearnerPortal";
+import ParentPortal from "./components/ParentPortal";
+import AccountantPortal from "./components/AccountantPortal";
 import { KeyRound, ShieldAlert, Monitor, Sparkles, BookOpen, UserCircle, LogOut } from "lucide-react";
 
 // Helper keys for localStorage persistence
@@ -104,7 +106,7 @@ export default function App() {
   });
 
   // Active Role and Persona State
-  const [currentRole, setCurrentRole] = useState<"Visitor" | "Admin" | "SectionManager" | "Teacher" | "Learner">("Visitor");
+  const [currentRole, setCurrentRole] = useState<"Visitor" | "Admin" | "SectionManager" | "Teacher" | "Learner" | "Parent" | "Accountant">("Visitor");
   const [activePersonaId, setActivePersonaId] = useState<string>("");
   const [activeSection, setActiveSection] = useState<"Nursery" | "Primary" | "Secondary">("Primary");
 
@@ -149,7 +151,7 @@ export default function App() {
   }, [tests]);
 
   // Handle Switch to Specific Prepared Demo Accounts
-  const handleQuickLogin = (role: "Visitor" | "Admin" | "SectionManager" | "Teacher" | "Learner", id: string = "", section: "Nursery" | "Primary" | "Secondary" = "Primary") => {
+  const handleQuickLogin = (role: "Visitor" | "Admin" | "SectionManager" | "Teacher" | "Learner" | "Parent" | "Accountant", id: string = "", section: "Nursery" | "Primary" | "Secondary" = "Primary") => {
     setCurrentRole(role);
     setActivePersonaId(id);
     setActiveSection(section);
@@ -250,6 +252,74 @@ export default function App() {
       receiptNo: "REC-POPLAR-MANUAL-" + Math.floor(Math.random() * 90000 + 10000)
     };
     setTransactions(prev => [newTxn, ...prev]);
+  };
+
+  const adjustFees = (studentId: string, amount: number, isWaiver: boolean) => {
+    setStudents(prev =>
+      prev.map(s => {
+        if (s.id === studentId) {
+          const newDue = isWaiver ? Math.max(0, s.feesDue - amount) : s.feesDue + amount;
+          return { ...s, feesDue: newDue };
+        }
+        return s;
+      })
+    );
+  };
+
+  const updateTransactionStatus = (transactionId: string, status: "Pending" | "Approved") => {
+    setTransactions(prev =>
+      prev.map(t => {
+        if (t.id === transactionId) {
+          // If transaction is marked approved, make sure we reflect it on the student's sheet too
+          if (status === "Approved" && t.status !== "Approved") {
+            setStudents(prevStudents =>
+              prevStudents.map(s => {
+                if (s.id === t.studentId) {
+                  const actualPaid = s.feesPaid + t.amount;
+                  const actualDue = Math.max(0, s.feesDue - t.amount);
+                  return { ...s, feesPaid: actualPaid, feesDue: actualDue };
+                }
+                return s;
+              })
+            );
+          }
+          return { ...t, status };
+        }
+        return t;
+      })
+    );
+  };
+
+  const registerParentAndStudent = (parentData: {
+    parentName: string;
+    parentEmail: string;
+    studentName: string;
+    section: "Nursery" | "Primary" | "Secondary";
+    className: string;
+    strengths: string;
+    weaknesses: string;
+    preferences: string;
+    photo: string;
+  }) => {
+    const defaultFees = parentData.section === "Nursery" ? 650000 : parentData.section === "Primary" ? 850000 : 1200000;
+    const newStudent: Student = {
+      id: "stud-" + Math.floor(Math.random() * 9000 + 1000).toString(),
+      name: parentData.studentName,
+      section: parentData.section,
+      className: parentData.className || (parentData.section === "Nursery" ? "Tiny Tots" : parentData.section === "Primary" ? "Grade 4 Bravo" : "Grade 11 Alpha"),
+      strengths: parentData.strengths || "Active",
+      weaknesses: parentData.weaknesses || "Needs initial guidelines",
+      preferences: parentData.preferences || "Visual maps",
+      parentName: parentData.parentName,
+      parentEmail: parentData.parentEmail,
+      enrollmentStatus: "Pending",
+      photo: parentData.photo || "https://images.unsplash.com/photo-1544717305-2782549b5136?w=150",
+      attendanceRate: 100,
+      feesDue: defaultFees,
+      feesPaid: 0,
+      grades: {}
+    };
+    setStudents(prev => [...prev, newStudent]);
   };
 
   const addHomework = (hw: Homework) => {
@@ -575,6 +645,25 @@ export default function App() {
                 onSubmitTest={handleSubmitTest}
               />
             )}
+
+            {currentRole === "Parent" && (
+              <ParentPortal
+                students={students}
+                transactions={transactions}
+                onRegisterParentAndStudent={registerParentAndStudent}
+                onPayFees={registerFeePayment}
+              />
+            )}
+
+            {currentRole === "Accountant" && (
+              <AccountantPortal
+                students={students}
+                transactions={transactions}
+                onAdjustFees={adjustFees}
+                onRecordPayment={registerFeePayment}
+                onUpdateTransactionStatus={updateTransactionStatus}
+              />
+            )}
           </div>
         )}
       </div>
@@ -596,7 +685,7 @@ export default function App() {
             </button>
 
             {/* Grid of Demarcated portals */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-6">
               {/* Box 1: Public View */}
               <div className="bg-[#3D0F0F] rounded-2xl p-4 border border-white/5 space-y-3 flex flex-col justify-between">
                 <div>
@@ -647,7 +736,7 @@ export default function App() {
                         <button
                           key={sec}
                           onClick={() => setActiveSection(sec)}
-                          className={`text-[9px] py-1 border rounded capitalize text-center ${
+                          className={`text-[9px] py-1 border rounded capitalize text-center cursor-pointer ${
                             activeSection === sec
                               ? "bg-[#1E90FF] text-white border-[#1E90FF] font-bold"
                               : "text-slate-400 bg-black/30 border-white/5"
@@ -683,7 +772,7 @@ export default function App() {
                   {/* Quick trigger lists for Mr Alistair, Clara, Marcus etc. */}
                   <div className="space-y-2.5 pt-3 border-t border-white/5">
                     <div>
-                      <span className="text-[9px] uppercase text-slate-400 font-mono block">Faculty Tutors:</span>
+                      <span className="text-[9px] uppercase text-slate-400 font-mono block font-bold">Faculty Tutors:</span>
                       <div className="flex flex-col gap-1 mt-1 font-mono text-[9px]">
                         <button
                           onClick={() => handleQuickLogin("Teacher", "staff-t1", "Primary")}
@@ -701,7 +790,7 @@ export default function App() {
                     </div>
 
                     <div>
-                      <span className="text-[9px] uppercase text-slate-400 font-mono block">Approved Scholars:</span>
+                      <span className="text-[9px] uppercase text-slate-400 font-mono block font-bold">Approved Scholars:</span>
                       <div className="flex flex-col gap-1 mt-1 font-mono text-[9px]">
                         <button
                           onClick={() => handleQuickLogin("Learner", "stud-p1", "Primary")}
@@ -719,6 +808,40 @@ export default function App() {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Box 5: Parents Portal */}
+              <div className="bg-[#3D0F0F] rounded-2xl p-4 border border-amber-500/15 space-y-3 flex flex-col justify-between">
+                <div>
+                  <span className="text-[9px] uppercase tracking-wider font-mono text-amber-500 font-bold font-bold">Families &amp; Accounts</span>
+                  <h4 className="font-serif italic font-bold text-lg text-white pt-1">Parents Portal</h4>
+                  <p className="text-xs text-[#E5C100] leading-relaxed font-light mt-1">
+                    Create parent/guardian accounts, clear student tuition fees using the mobile money or smart card gateway, and register new kids.
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleQuickLogin("Parent")}
+                  className="w-full py-2 bg-amber-500 hover:bg-amber-400 text-[#2D0A0A] font-bold text-xs uppercase tracking-wider rounded border-none cursor-pointer"
+                >
+                  Load Parents Dashboard
+                </button>
+              </div>
+
+              {/* Box 6: Accountant & Treasury Portal */}
+              <div className="bg-[#3D0F0F] rounded-2xl p-4 border border-rose-500/15 space-y-3 flex flex-col justify-between">
+                <div>
+                  <span className="text-[9px] uppercase tracking-wider font-mono text-rose-400 font-bold">Consolidated Ledger</span>
+                  <h4 className="font-serif italic font-bold text-lg text-white pt-1">School Treasurer</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed font-light mt-1">
+                    Review payments pushed by parents through mobile wallets or smart cards, reconcile receipts, modify tuition waivers, and audit logs.
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleQuickLogin("Accountant")}
+                  className="w-full py-2 bg-rose-500 hover:bg-rose-400 text-[#2C0A0A] font-bold text-xs uppercase tracking-wider rounded border-none cursor-pointer"
+                >
+                  Load Accountant Portal
+                </button>
               </div>
             </div>
           </div>

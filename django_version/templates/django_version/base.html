@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Poplar School Management System{% endblock %}</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        poplar: {
+                            bg: '#1C0505',
+                            card: '#2D0A0A',
+                            cardLight: '#3D0F0F',
+                            text: '#F3EFEF',
+                            gold: '#FFD700',
+                            goldHover: '#E5C100',
+                            primaryBlue: '#1E90FF',
+                            secondaryGold: '#FFD700'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons Tag (via unpkg / class selectors) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Alpine.js for smooth client-side interactions -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <style>
+        body {
+            background-color: #1C0505;
+            color: #F3EFEF;
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar matching dark palette */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1C0505;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3D0F0F;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FFD700;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="h-full flex flex-col antialiased">
+
+    <!-- Global Sticky Notification / Banner -->
+    <div class="bg-gradient-to-r from-red-950 via-amber-950 to-red-950 border-b border-poplar-gold/10 px-4 py-2 text-center text-xs text-poplar-gold font-mono tracking-wide flex items-center justify-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Consolidated Django Environment Active | 2026 Academic Cycle</span>
+        <span class="text-slate-400">| Standard &amp; Enterprise Clearance Gates Configured</span>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <header class="bg-poplar-card border-b border-white/5 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand Title -->
+                <div class="flex items-center gap-3">
+                    <div class="bg-poplar-cardLight w-10 h-10 rounded-xl flex items-center justify-center border border-poplar-gold/25 shadow-md">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-poplar-gold"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-serif italic text-lg leading-tight font-bold text-white flex items-center gap-2">
+                            Poplar School
+                        </h1>
+                        <span class="text-[10px] text-poplar-gold font-light tracking-widest block uppercase font-serif">Academy &amp; Nursery</span>
+                    </div>
+                </div>
+
+                <!-- Global Quick Role Select Grid -->
+                <div class="hidden xl:flex items-center gap-2 bg-black/40 p-1.5 rounded-xl border border-white/5 font-mono text-xs">
+                    <span class="text-slate-400 px-2 text-[10px] uppercase font-bold">Fast Gateway:</span>
+                    <a href="?role=Visitor" class="px-2.5 py-1 rounded hover:text-white transition-colors {% if current_role == 'Visitor' or not current_role %}bg-white/10 text-white font-bold{% else %}text-slate-400{% endif %}">Visitor</a>
+                    <a href="?role=Admin" class="px-2.5 py-1 rounded hover:text-white transition-colors {% if current_role == 'Admin' %}bg-white/10 text-white font-bold{% else %}text-slate-400{% endif %}">Director</a>
+                    <a href="?role=SectionManager" class="px-2.5 py-1 rounded hover:text-white transition-colors {% if current_role == 'SectionManager' %}bg-white/10 text-white font-bold{% else %}text-slate-400{% endif %}">Head</a>
+                    <a href="?role=Teacher" class="px-2.5 py-1 rounded hover:text-white transition-colors {% if current_role == 'Teacher' %}bg-white/10 text-white font-bold{% else %}text-slate-400{% endif %}">Tutor</a>
+                    <a href="?role=Learner" class="px-2.5 py-1 rounded hover:text-white transition-colors {% if current_role == 'Learner' %}bg-white/10 text-white font-bold{% else %}text-slate-400{% endif %}">Scholar</a>
+                    <a href="?role=Parent" class="px-2.5 py-1 rounded hover:text-white transition-colors {% if current_role == 'Parent' %}bg-white/10 text-white font-bold{% else %}text-slate-400{% endif %}">Parent</a>
+                    <a href="?role=Accountant" class="px-2.5 py-1 rounded hover:text-white transition-colors {% if current_role == 'Accountant' %}bg-white/10 text-white font-bold{% else %}text-slate-400{% endif %}">Treasurer</a>
+                </div>
+
+                <!-- Actions / Controls -->
+                <div class="flex items-center gap-3">
+                    <div class="text-right">
+                        <div class="text-xs font-semibold text-white">Guest Persona</div>
+                        <div class="text-[10px] font-mono text-poplar-gold">Role: {{ current_role|default:"Visitor" }}</div>
+                    </div>
+                    
+                    <!-- Dynamic database seed indicator -->
+                    <form method="post" action="{% url 'seed_demo_data' %}" class="inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" class="flex items-center gap-1 px-3 py-1.5 bg-rose-950 hover:bg-rose-900 border border-rose-700/35 rounded-lg text-[10px] tracking-wider uppercase font-mono text-rose-300 font-bold shadow cursor-pointer transition-all">
+                            <i data-lucide="database" class="w-3 h-3"></i> Sync Seed DB
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Portable Navigation ribbon (visible on mobile / tablet) -->
+    <div class="xl:hidden bg-poplar-cardLight/50 border-b border-white/5 p-2 overflow-x-auto whitespace-nowrap scrollbar-none flex gap-1.5 font-mono text-xs">
+        <span class="text-slate-400 self-center uppercase text-[9px] font-bold px-2">Roles:</span>
+        <a href="?role=Visitor" class="px-3 py-1 bg-black/40 rounded border border-white/5 text-[11px] {% if current_role == 'Visitor' or not current_role %}border-poplar-gold text-poplar-gold font-bold{% else %}text-slate-300{% endif %}">Visitor</a>
+        <a href="?role=Admin" class="px-3 py-1 bg-black/40 rounded border border-white/5 text-[11px] {% if current_role == 'Admin' %}border-poplar-gold text-poplar-gold font-bold{% else %}text-slate-300{% endif %}">Director</a>
+        <a href="?role=SectionManager" class="px-3 py-1 bg-black/40 rounded border border-white/5 text-[11px] {% if current_role == 'SectionManager' %}border-poplar-gold text-poplar-gold font-bold{% else %}text-slate-300{% endif %}">Head</a>
+        <a href="?role=Teacher" class="px-3 py-1 bg-black/40 rounded border border-white/5 text-[11px] {% if current_role == 'Teacher' %}border-poplar-gold text-poplar-gold font-bold{% else %}text-slate-300{% endif %}">Tutor</a>
+        <a href="?role=Learner" class="px-3 py-1 bg-black/40 rounded border border-white/5 text-[11px] {% if current_role == 'Learner' %}border-poplar-gold text-poplar-gold font-bold{% else %}text-slate-300{% endif %}">Scholar</a>
+        <a href="?role=Parent" class="px-3 py-1 bg-black/40 rounded border border-white/5 text-[11px] {% if current_role == 'Parent' %}border-poplar-gold text-poplar-gold font-bold{% else %}text-slate-300{% endif %}">Parent</a>
+        <a href="?role=Accountant" class="px-3 py-1 bg-black/40 rounded border border-white/5 text-[11px] {% if current_role == 'Accountant' %}border-poplar-gold text-poplar-gold font-bold{% else %}text-slate-300{% endif %}">Treasurer</a>
+    </div>
+
+    <!-- Unified Toast / Notifications -->
+    {% if messages %}
+    <div class="fixed top-20 right-6 z-50 flex flex-col gap-3 max-w-sm">
+        {% for msg in messages %}
+        <div class="flex items-center gap-2 p-3.5 rounded-xl text-xs font-mono font-bold shadow-2xl border bg-black/95 text-[#FFD700] border-[#FFD700]/25 transform transition-all animate-bounce">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+            <span>{{ msg }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Container Layout -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        
+        <!-- Interactive Banner to direct users if database is unseeded -->
+        {% if is_unseeded %}
+        <div class="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex gap-2.5 items-start">
+                <i data-lucide="alert-circle" class="w-5 h-5 text-amber-500 shrink-0 mt-0.5"></i>
+                <div class="space-y-0.5">
+                    <h4 class="text-xs font-semibold text-white">Database Registry Currently Unseeded</h4>
+                    <p class="text-[11px] text-slate-400 font-mono">No sample ClassGroups, Students, or FeeTransactions found. Click "Sync Seed DB" above or right here to populate realistic data structures.</p>
+                </div>
+            </div>
+            <form method="post" action="{% url 'seed_demo_data' %}">
+                {% csrf_token %}
+                <button type="submit" class="px-4 py-2 bg-gradient-to-r from-amber-600 to-amber-500 text-black font-semibold text-xs tracking-wide uppercase font-mono rounded-lg border-none cursor-pointer hover:brightness-110 shadow">
+                    Bootstrap Demo Records
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-poplar-card border-t border-white/5 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-2">
+            <p class="text-xs font-serif italic text-poplar-gold">
+                Poplar Co-operative Academy and Nursery Consolidated Administrative Ledger
+            </p>
+            <p class="text-[10px] text-slate-500 font-mono">
+                Ported to Django Framework v4.2+ &amp; Python 3.9+ | Secure Ledger Vault Sync: Active
+            </p>
+            <div class="flex justify-center gap-4 text-[10px] font-mono text-slate-400 pt-1.5">
+                <span>Standard Edition: Unlimited Classes</span>
+                <span class="text-slate-600">&bull;</span>
+                <span>Enterprise Shield: Active</span>
+                <span class="text-slate-600">&bull;</span>
+                <span>Audit Sync Threshold: 14ms</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

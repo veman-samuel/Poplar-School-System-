@@ -1,0 +1,321 @@
+<!-- Teacher Classroom & Lesson Hub -->
+<div id="portal-teacher-root" class="space-y-6" x-data="{ teacherTab: 'attendance', showSowModal: false, showGradeModal: false, showHomeworkModal: false }">
+
+    <!-- Header block -->
+    <div class="border-b border-white/5 pb-5">
+        <div class="flex items-center gap-2">
+            <span class="text-[10px] uppercase font-mono tracking-widest bg-yellow-500/10 text-yellow-400 px-3 py-1 rounded-full border border-yellow-500/15 font-bold">
+                Tutor Suit
+            </span>
+            <span class="text-xs text-slate-500 font-mono">Status: Authenticated Educator</span>
+        </div>
+        <h2 class="text-2xl lg:text-3xl font-serif italic text-white font-bold pt-1.5">
+            Classroom Registry &amp; Curriculum Control
+        </h2>
+        <p class="text-xs text-slate-400 font-mono mt-1">
+            Build schemes of work, file class evaluations, record daily student checklists, and publish homework objectives.
+        </p>
+    </div>
+
+    <!-- Toolbar Actions -->
+    <div class="flex flex-wrap gap-2 text-xs font-mono font-bold">
+        <button @click="showSowModal = true"
+                class="px-4 py-2 bg-poplar-card hover:bg-poplar-cardLight text-white rounded-lg border border-white/10 flex items-center gap-1.5 cursor-pointer transition-all">
+            <i data-lucide="book-plus" class="w-4 h-4 text-poplar-gold"></i> Structure SOW Plan
+        </button>
+        <button @click="showGradeModal = true"
+                class="px-4 py-2 bg-poplar-card hover:bg-poplar-cardLight text-white rounded-lg border border-white/10 flex items-center gap-1.5 cursor-pointer transition-all">
+            <i data-lucide="award" class="w-4 h-4 text-emerald-400"></i> Evaluate Scholar Grade
+        </button>
+        <button @click="showHomeworkModal = true"
+                class="px-4 py-2 bg-poplar-gold hover:bg-poplar-goldHover text-black rounded-lg border-none flex items-center gap-1.5 cursor-pointer transition-all shadow">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i> Issue Assignment Homework
+        </button>
+    </div>
+
+    <!-- Tab navigation -->
+    <div class="flex border-b border-white/5 pb-px overflow-x-auto gap-1">
+        <button @click="teacherTab = 'attendance'"
+                :class="teacherTab === 'attendance' ? 'text-poplar-gold border-poplar-gold font-bold' : 'text-slate-400 border-transparent hover:text-white'"
+                class="py-3 px-4 text-xs font-semibold tracking-wider uppercase font-mono border-b-2 bg-transparent cursor-pointer whitespace-nowrap transition-all">
+            Class Attendance Sheets
+        </button>
+        <button @click="teacherTab = 'schemes'"
+                :class="teacherTab === 'schemes' ? 'text-poplar-gold border-poplar-gold font-bold' : 'text-slate-400 border-transparent hover:text-white'"
+                class="py-3 px-4 text-xs font-semibold tracking-wider uppercase font-mono border-b-2 bg-transparent cursor-pointer whitespace-nowrap transition-all">
+            Active Schemes of Work ({{ schemes_of_work.count }})
+        </button>
+        <button @click="teacherTab = 'grades'"
+                :class="teacherTab === 'grades' ? 'text-poplar-gold border-poplar-gold font-bold' : 'text-slate-400 border-transparent hover:text-white'"
+                class="py-3 px-4 text-xs font-semibold tracking-wider uppercase font-mono border-b-2 bg-transparent cursor-pointer whitespace-nowrap transition-all">
+            Academic Grades Ledger
+        </button>
+    </div>
+
+    <!-- SUB-TAB 1: Class Attendance Sheet -->
+    <div x-show="teacherTab === 'attendance'" class="space-y-4">
+        <div class="bg-poplar-card rounded-2xl border border-white/5 p-5 space-y-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-white/5 pb-3 gap-2">
+                <div>
+                    <h3 class="font-serif italic font-bold text-base text-white">Daily Student Attendance Checklist</h3>
+                    <p class="text-[10px] text-slate-400 font-mono">Date Reference: {% now "Y-m-d" %}</p>
+                </div>
+                <!-- Core trigger to save attendance -->
+                <span class="text-[10px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded">All registered students loaded</span>
+            </div>
+
+            <!-- Scrollable list of students with checkboxes -->
+            <form method="post" action="{% url 'record_bulk_attendance' %}" class="space-y-4 font-mono text-xs">
+                {% csrf_token %}
+                <div class="divide-y divide-white/5 max-h-[300px] overflow-y-auto pr-2 space-y-2">
+                    {% for pupil in students %}
+                    <div class="flex items-center justify-between py-2">
+                        <div class="flex items-center gap-2.5">
+                            <img src="{{ pupil.photo }}" class="w-6 h-6 rounded-full">
+                            <div>
+                                <span class="font-bold text-white block">{{ pupil.name }}</span>
+                                <span class="text-[10px] text-slate-500">Ref: {{ pupil.id }} | Section: {{ pupil.section }}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs text-slate-300">
+                                <input type="checkbox" name="present_students" value="{{ pupil.id }}" checked
+                                       class="w-4 h-4 accent-poplar-gold rounded border-white/10 bg-black cursor-pointer">
+                                Mark Present
+                            </label>
+                            <input type="hidden" name="all_student_ids" value="{{ pupil.id }}">
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-xs text-slate-500 italic p-4 text-center">No students found. Add students first.</p>
+                    {% endfor %}
+                </div>
+
+                <div class="pt-4 border-t border-white/5 flex justify-end">
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase rounded-lg border-none cursor-pointer transition-all">
+                        Commit Session Attendance Logs
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUB-TAB 2: Active Schemes of Work -->
+    <div x-show="teacherTab === 'schemes'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for plan in schemes_of_work %}
+        <div class="bg-poplar-card p-5 rounded-2xl border border-white/5 space-y-3 flex flex-col justify-between">
+            <div class="space-y-1.5">
+                <div class="flex justify-between items-start">
+                    <span class="text-[10px] font-mono text-poplar-gold font-bold bg-poplar-gold/10 px-2 py-0.5 rounded uppercase">{{ plan.term }}</span>
+                    <span class="text-[10px] text-slate-500 font-mono font-bold">{{ plan.period_description }}</span>
+                </div>
+                <h4 class="text-sm font-bold text-white">{{ plan.title }}</h4>
+                <p class="text-xs text-slate-400 font-mono pt-1">Course subject: <strong class="text-slate-300">{{ plan.subject.name }}</strong></p>
+                <div class="text-[10px] text-slate-400 bg-black/30 p-2.5 rounded-xl border border-white/5 font-mono max-h-[120px] overflow-y-auto">
+                    <strong>Weekly targets:</strong>
+                    <ul class="list-disc list-inside mt-1 space-y-0.5">
+                        <li>Week 1-4: Syllabus introductions and target alignment tests.</li>
+                        <li>Week 5-8: Mid-term algebraic equation models &amp; homework checks.</li>
+                        <li>Week 9-12: Full assessment trials and mock exam grading workflows.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-3 border-t border-white/5 text-[9px] font-mono text-slate-500 flex justify-between">
+                <span>Created: {{ plan.created_at|date:"M d, Y" }}</span>
+                <span>Active Core Syllabus</span>
+            </div>
+        </div>
+        {% empty %}
+        <div class="bg-poplar-card p-6 rounded-2xl text-center text-slate-400 italic font-mono col-span-2">
+            No academic Schemes of Work recorded. Use the "Structure SOW Plan" button to log curriculum periods.
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- SUB-TAB 3: Academic Grades Ledger -->
+    <div x-show="teacherTab === 'grades'" class="bg-poplar-card rounded-2xl border border-white/5 overflow-hidden">
+        <div class="p-4 bg-poplar-cardLight/50 border-b border-white/5 flex justify-between items-center text-xs font-mono">
+            <h3 class="font-serif italic text-white font-bold text-sm">Graded Evaluations Summary</h3>
+            <span class="text-[10px] text-poplar-gold font-bold">Consolidated records count: {{ grades.count }}</span>
+        </div>
+        <div class="overflow-x-auto text-xs font-mono">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-black/40 border-b border-white/10 text-[9px] text-poplar-gold uppercase font-bold">
+                        <th class="p-4">Student</th>
+                        <th class="p-4">Evaluated Course</th>
+                        <th class="p-4">Grade Recounted</th>
+                        <th class="p-4">Status Indicator</th>
+                        <th class="p-4 text-right">Commit Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for entry in grades %}
+                    <tr class="hover:bg-black/10">
+                        <td class="p-4 font-bold text-white">{{ entry.student.name }}</td>
+                        <td class="p-4 text-slate-300">{{ entry.subject.name }}</td>
+                        <td class="p-4 font-bold font-mono text-white text-sm">{{ entry.grade_percentage }}%</td>
+                        <td class="p-4">
+                            {% if entry.grade_percentage >= 80 %}
+                            <span class="text-[9px] bg-emerald-500/15 text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-500/20 uppercase">Excellent</span>
+                            {% elif entry.grade_percentage >= 50 %}
+                            <span class="text-[9px] bg-amber-500/15 text-amber-400 font-bold px-2 py-0.5 rounded border border-amber-500/20 uppercase">Progressing</span>
+                            {% else %}
+                            <span class="text-[9px] bg-red-500/15 text-red-400 font-bold px-2 py-0.5 rounded border border-red-500/20 uppercase">Critical Help</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 text-slate-500 text-right font-mono text-[9px]">{{ entry.evaluated_date|date:"F d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colSpan="5" class="p-6 text-center text-slate-500 italic">No formal grades logged in database register yet. Use "Evaluate Scholar Grade" above.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- MODAL 1: CREATE SCHEME OF WORK -->
+    <div x-show="showSowModal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 animate-fade-in" x-cloak>
+        <form method="post" action="{% url 'create_sow' %}" 
+              class="bg-poplar-card border border-[#FFD700]/25 rounded-2xl p-6 w-full max-w-md space-y-4 font-mono text-xs relative">
+            {% csrf_token %}
+            <h3 class="text-lg font-serif italic text-poplar-gold font-bold">Structure SOW Curriculum Plan</h3>
+            <button type="button" @click="showSowModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-white border-none bg-transparent cursor-pointer font-bold">✕</button>
+
+            <div class="space-y-1.5">
+                <label class="text-slate-400 block font-bold uppercase text-[9px]">Plan Title:</label>
+                <input type="text" name="title" required placeholder="e.g. Quadrant Algebra Foundation"
+                       class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 focus:outline-none">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+                <div class="space-y-1.5">
+                    <label class="text-slate-400 block font-bold uppercase text-[9px]">Target Term:</label>
+                    <select name="term" required class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100">
+                        <option value="Term 1">Term 1</option>
+                        <option value="Term 2">Term 2</option>
+                        <option value="Term 3">Term 3</option>
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-slate-400 block font-bold uppercase text-[9px]">Course Subject:</label>
+                    <select name="subject_id" required class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100">
+                        {% for sub in subjects %}
+                        <option value="{{ sub.id }}">{{ sub.name }} ({{ sub.class_group.title }})</option>
+                        {% empty %}
+                        <option value="">No Active Core Subjects. Seed database.</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="text-slate-400 block font-bold uppercase text-[9px]">Period Description Milestone:</label>
+                <input type="text" name="period_description" required placeholder="e.g. 4 Months Intensive Plan"
+                       class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 focus:outline-none">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <button type="button" @click="showSowModal = false" class="py-2.5 bg-black/40 text-slate-300 font-bold uppercase rounded border border-white/5 cursor-pointer">Cancel</button>
+                <button type="submit" class="py-2.5 bg-poplar-gold hover:bg-poplar-goldHover text-black font-bold uppercase rounded border-none cursor-pointer">Publish Syllabus</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- MODAL 2: COMMITTED STUDENT GRADE -->
+    <div x-show="showGradeModal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 animate-fade-in" x-cloak>
+        <form method="post" action="{% url 'update_student_grade' %}" 
+              class="bg-poplar-card border border-poplar-gold/25 rounded-2xl p-6 w-full max-w-md space-y-4 font-mono text-xs relative">
+            {% csrf_token %}
+            <h3 class="text-lg font-serif italic text-poplar-gold font-bold">Evaluate Scholar Course Score</h3>
+            <button type="button" @click="showGradeModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-white border-none bg-transparent cursor-pointer font-bold">✕</button>
+
+            <div class="space-y-1.5">
+                <label class="text-slate-400 block font-bold uppercase text-[9px]">Target Scholar Student:</label>
+                <select name="student_id" required class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100">
+                    {% for slr in students %}
+                    <option value="{{ slr.id }}">{{ slr.name }} (Section: {{ slr.section }})</option>
+                    {% empty %}
+                    <option value="">No Pupils Available. Onboard pupil first.</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+                <div class="space-y-1.5">
+                    <label class="text-slate-400 block font-bold uppercase text-[9px]">Subject Track:</label>
+                    <select name="subject_id" required class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100">
+                        {% for item in subjects %}
+                        <option value="{{ item.id }}">{{ item.name }} ({{ item.class_group.title }})</option>
+                        {% empty %}
+                        <option value="">No Active Topics.</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-slate-400 block font-bold uppercase text-[9px]">Percentage Score Achieved:</label>
+                    <input type="number" name="grade_percentage" required min="0" max="100" placeholder="e.g. 85"
+                           class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <button type="button" @click="showGradeModal = false" class="py-2.5 bg-black/40 text-slate-300 font-bold uppercase rounded border border-white/5 cursor-pointer">Cancel</button>
+                <button type="submit" class="py-2.5 bg-poplar-gold hover:bg-poplar-goldHover text-black font-bold uppercase rounded border-none cursor-pointer">Log Score</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- MODAL 3: ISSUE HOMEWORK ASSIGNMENT -->
+    <div x-show="showHomeworkModal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 animate-fade-in" x-cloak>
+        <form method="post" action="{% url 'create_homework' %}" 
+              class="bg-poplar-card border border-poplar-gold/25 rounded-2xl p-6 w-full max-w-md space-y-4 font-mono text-xs relative">
+            {% csrf_token %}
+            <h3 class="text-lg font-serif italic text-poplar-gold font-bold">Issue Classroom Homework Task</h3>
+            <button type="button" @click="showHomeworkModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-white border-none bg-transparent cursor-pointer font-bold">✕</button>
+
+            <div class="space-y-1.5">
+                <label class="text-slate-400 block font-bold uppercase text-[9px]">Assignment Title:</label>
+                <input type="text" name="title" required placeholder="e.g. Literacy Comprehension Passage"
+                       class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 focus:outline-none">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+                <div class="space-y-1.5">
+                    <label class="text-slate-400 block font-bold uppercase text-[9px]">Assigned Subject:</label>
+                    <select name="subject_id" required class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100">
+                        {% for sub in subjects %}
+                        <option value="{{ sub.id }}">{{ sub.name }} ({{ sub.class_group.title }})</option>
+                        {% empty %}
+                        <option value="">No Active Topics.</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-slate-400 block font-bold uppercase text-[9px]">Total Max Points:</label>
+                    <input type="number" name="max_score" required value="100" min="1"
+                           class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="text-slate-400 block font-bold uppercase text-[9px]">Due Date Target (yyyy-mm-dd):</label>
+                <input type="date" name="due_date" required value="2026-06-30"
+                       class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 focus:outline-none font-mono">
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="text-slate-400 block font-bold uppercase text-[9px]">Instructions &amp; Prompts:</label>
+                <textarea name="instructions" required placeholder="e.g. Read the assigned chapter and write a 300-word summary." rows="3"
+                          class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 focus:outline-none"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <button type="button" @click="showHomeworkModal = false" class="py-2.5 bg-black/40 text-slate-300 font-bold uppercase rounded border border-white/5 cursor-pointer">Cancel</button>
+                <button type="submit" class="py-2.5 bg-poplar-gold hover:bg-poplar-goldHover text-black font-bold uppercase rounded border-none cursor-pointer">Deploy Assignment</button>
+            </div>
+        </form>
+    </div>
+</div>

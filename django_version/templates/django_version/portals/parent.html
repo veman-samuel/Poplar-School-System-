@@ -1,0 +1,189 @@
+<!-- Parent / Family Tuition Desk -->
+<div id="portal-parent-root" class="space-y-6" x-data="{ parentTab: 'ledger', showPayModal: false }">
+
+    <!-- Header block -->
+    <div class="border-b border-white/5 pb-5">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] uppercase font-mono tracking-widest bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/15 font-bold">
+                        Parent Gateway
+                    </span>
+                    <span class="text-xs text-slate-500 font-mono">Status: Authenticated Family Coordinator</span>
+                </div>
+                <h2 class="text-2xl lg:text-3xl font-serif italic text-white font-bold pt-1.5 flex items-center gap-2">
+                    Guardian Portal &amp; Treasury Gateway
+                </h2>
+                <p class="text-xs text-slate-400 font-mono mt-1">
+                    Clear scholastic fees online via Mobile Money or Poplar Smart Badges and download printable fee receipts.
+                </p>
+            </div>
+
+            <!-- Parent Profile Selector -->
+            <div class="bg-black/40 border border-white/5 p-2 rounded-xl flex items-center gap-2 text-xs font-mono">
+                <span class="text-slate-500 uppercase text-[9px] font-bold font-bold">Child Profile:</span>
+                <form method="get" class="inline">
+                    <input type="hidden" name="role" value="Parent">
+                    <select name="active_student_id" onchange="this.form.submit()"
+                            class="bg-[#1C0505] p-1.5 border border-white/10 rounded-lg text-slate-100 font-bold focus:outline-none">
+                        {% for std in children %}
+                        <option value="{{ std.id }}" {% if std.id == active_student_id %}selected{% endif %}>{{ std.name }} ({{ std.class_group.title }})</option>
+                        {% empty %}
+                        <option value="">No Registered Dependents Found</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% if current_child %}
+    <!-- Ledger Status Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Outstanding Tuitions Balance -->
+        <div class="p-6 bg-[#2D0A0A] border-l-4 border-l-poplar-gold rounded-2xl border-y border-r border-[#FFD700]/15 space-y-2 flex flex-col justify-between">
+            <div>
+                <span class="text-[9px] font-mono uppercase text-slate-400 block font-bold">Outstanding Remaining</span>
+                <p class="text-2xl font-mono text-poplar-gold font-bold">UGX {{ current_child.outstanding_balance }}</p>
+            </div>
+            <div class="text-[10px] text-slate-500 font-mono flex justify-between">
+                <span>Tuition Total: UGX {{ current_child.fees_due }}</span>
+                <span>Term Balance</span>
+            </div>
+        </div>
+
+        <!-- Cleared fees -->
+        <div class="p-6 bg-poplar-card rounded-2xl border border-white/5 space-y-2 flex flex-col justify-between">
+            <div>
+                <span class="text-[9px] font-mono uppercase text-slate-400 block font-bold">Total Tuition Paid</span>
+                <p class="text-2xl font-mono text-emerald-400 font-bold">UGX {{ current_child.fees_paid }}</p>
+            </div>
+            <p class="text-[10px] text-[#FFD700]/60 font-mono">100% Secure Transaction Guard Active</p>
+        </div>
+
+        <!-- Trigger Payment Button -->
+        <div class="p-6 bg-poplar-card rounded-2xl border border-white/5 flex flex-col justify-center items-center gap-3">
+            <span class="text-center font-mono text-[10px] text-slate-400 uppercase font-bold">Action Center</span>
+            <button @click="showPayModal = true"
+                    class="w-full py-3 bg-gradient-to-r from-amber-600 to-[#FFD700] text-black font-semibold uppercase text-xs tracking-wider rounded-xl hover:brightness-110 cursor-pointer shadow-md transition-all font-mono">
+                Clear Scholastic Tuition
+            </button>
+        </div>
+    </div>
+
+    <!-- Details View Tabs -->
+    <div class="flex border-b border-white/5 pb-px overflow-x-auto gap-1">
+        <button @click="parentTab = 'ledger'"
+                :class="parentTab === 'ledger' ? 'text-poplar-gold border-poplar-gold font-bold' : 'text-slate-400 border-transparent hover:text-white'"
+                class="py-3 px-4 text-xs font-semibold tracking-wider uppercase font-mono border-b-2 bg-transparent cursor-pointer whitespace-nowrap transition-all">
+            Fidelity Receipts Archive ({{ child_transactions.count }})
+        </button>
+    </div>
+
+    <!-- Tab Section: Receipts lists -->
+    <div x-show="parentTab === 'ledger'" class="bg-poplar-card rounded-2xl border border-white/5 overflow-hidden">
+        <div class="p-4 bg-poplar-cardLight/50 border-b border-white/5 flex justify-between items-center text-xs font-mono">
+            <h3 class="font-serif italic text-white font-bold text-sm">Receipts history for school payments</h3>
+            <span class="text-[10px] text-poplar-gold">Payment cleared matching keys</span>
+        </div>
+        <div class="overflow-x-auto text-xs font-mono">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-black/40 border-b border-white/10 text-[9px] text-poplar-gold uppercase font-bold">
+                        <th class="p-4">Receipt Serial</th>
+                        <th class="p-4">Sum Cleared</th>
+                        <th class="p-4 font-bold">Method</th>
+                        <th class="p-4">Trace details</th>
+                        <th class="p-4 text-right">Filing Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for txn in child_transactions %}
+                    <tr class="hover:bg-black/15">
+                        <td class="p-4 font-bold text-white">{{ txn.receipt_no }}</td>
+                        <td class="p-4 text-emerald-400 font-bold font-mono">UGX {{ txn.amount_paid }}</td>
+                        <td class="p-4">
+                            <span class="px-2 py-0.5 bg-[#1C0505] rounded text-[9px] border border-white/10 uppercase">{{ txn.get_payment_method_display }}</span>
+                        </td>
+                        <td class="p-4 text-slate-400">
+                            {% if txn.phone_number_used %}
+                            Line: <strong class="text-slate-300">{{ txn.phone_number_used }}</strong>
+                            {% elif txn.smart_card_hardware_id %}
+                            Badge: <strong class="text-slate-300">{{ txn.smart_card_hardware_id }}</strong>
+                            {% else %}
+                            Bank ledger entry
+                            {% endif %}
+                        </td>
+                        <td class="p-4 text-slate-500 text-right font-mono text-[9px]">{{ txn.transaction_date|date:"H:i M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colSpan="5" class="p-6 text-center text-slate-500 italic">No payments logged under this student profile record yet. Keep your ledger clear to avoid academic suspensions.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- MODAL: PAY FOR TUITION -->
+    <div x-show="showPayModal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 animate-fade-in" x-cloak>
+        <form method="post" action="{% url 'process_payment' %}" 
+              class="bg-poplar-card border border-poplar-gold/25 rounded-2xl p-6 w-full max-w-sm space-y-4 font-mono text-xs relative"
+              x-data="{ paymentMethod: 'MM_MPESA' }">
+            {% csrf_token %}
+            <h3 class="text-lg font-serif italic text-poplar-gold font-bold">Clear Scholastic tuition fees</h3>
+            <button type="button" @click="showPayModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-white border-none bg-transparent cursor-pointer font-bold">✕</button>
+
+            <input type="hidden" name="student_id" value="{{ current_child.id }}">
+            <input type="hidden" name="active_student_id" value="{{ current_child.id }}">
+
+            <div class="space-y-1.5">
+                <span class="text-slate-500 block uppercase font-bold text-[9px]">Target Dues Scholar:</span>
+                <p class="p-2.5 bg-[#1C0505] rounded border border-white/5 font-bold text-white">{{ current_child.name }} (Outstanding: UGX {{ current_child.outstanding_balance }})</p>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="text-slate-400 block font-bold uppercase text-[9px]">Sum Clear Amount (UGX):</label>
+                <input type="number" name="amount" required max="{{ current_child.outstanding_balance }}" placeholder="e.g. 200000" rows="1"
+                       class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 placeholder-slate-600 focus:outline-none">
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="text-slate-400 block font-bold uppercase text-[9px]">Select Payment Gateway Option:</label>
+                <select name="payment_method" required x-model="paymentMethod"
+                        class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 focus:outline-none">
+                    <option value="MM_MPESA">M-Pesa Mobile Gateway</option>
+                    <option value="MM_MTN">MTN Mobile Money Wallet</option>
+                    <option value="MM_AIRTEL">Airtel Money Wallet</option>
+                    <option value="SMART_CARD">Poplar Smart Identification NFC Card</option>
+                </select>
+            </div>
+
+            <!-- Conditional Display Phone Number -->
+            <div class="space-y-1.5 animate-pulse" x-show="paymentMethod !== 'SMART_CARD'">
+                <label class="text-slate-400 block font-bold uppercase text-[9px]">Mobile Money Phone line (+256...):</label>
+                <input type="text" name="phone_number_used" placeholder="e.g. 256772718222" value="2567"
+                       class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 focus:outline-none focus:border-poplar-gold/40 font-mono">
+            </div>
+
+            <!-- Conditional NFC Hardware identification tracking -->
+            <div class="space-y-1.5 animate-pulse" x-show="paymentMethod === 'SMART_CARD'">
+                <label class="text-slate-400 block font-bold uppercase text-[9px]">Simulated NFC badge UID key:</label>
+                <input type="text" name="smart_card_hardware_id" placeholder="e.g. POPLAR-CHIP-990-22X" value="POPLAR-CHIP-990-"
+                       class="w-full bg-[#1C0505] p-2.5 border border-white/10 rounded-lg text-slate-100 focus:outline-none focus:border-poplar-gold/40 font-mono">
+            </div>
+
+            <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-[#FFD700] text-black font-semibold uppercase text-xs tracking-wider rounded-xl hover:brightness-110 cursor-pointer shadow-lg transition-all font-mono">
+                Authorize Transaction Security
+            </button>
+        </form>
+    </div>
+
+    {% else %}
+    <div class="bg-poplar-card p-6 rounded-2xl border border-white/5 text-center text-slate-400 italic font-mono col-span-3">
+        Sync sample databases to load active student dependent accounts.
+    </div>
+    {% endif %}
+
+</div>
